@@ -61,36 +61,44 @@ VALUES (
 
 -- SELECT-запросы
 -- Название и продолжительность самого длительного трека:
-sql
 SELECT title, duration 
 FROM tracks 
 ORDER BY duration DESC 
 LIMIT 1;
 
 --Название треков, продолжительность которых не менее 3,5 минут (210 секунд):
-sql
 SELECT title 
 FROM tracks 
 WHERE duration >= 210;
 
 
 --Названия сборников, вышедших в период с 2018 по 2020 год включительно:
-sql
 SELECT title 
 FROM compilations 
 WHERE release_year BETWEEN 2018 AND 2020;
 
 --Исполнители, чьё имя состоит из одного слова:
-sql
 SELECT name 
 FROM artists 
 WHERE name NOT LIKE '% %';
 
---Название треков, которые содержат слово «мой» или «my» (с учетом регистра):
+--Название треков, которые содержат слово «мой» или «my» (решение через регулярки):
 SELECT title 
 FROM tracks 
-WHERE title ILIKE '%мой%' OR title ILIKE '%my%';
+WHERE title ~* '(^|\s)мой(\s|$)' 
+   OR title ~* '(^|\s)my(\s|$)';
 
+--Название треков, которые содержат слово «мой» или «my» (решение через LIKE):
+SELECT title 
+FROM tracks 
+WHERE title ILIKE 'мой %'   -- В начале с пробелом после
+   OR title ILIKE '% мой'   -- В конце с пробелом перед
+   OR title ILIKE '% мой %' -- В середине с пробелами
+   OR title ILIKE 'мой'     -- Только слово
+   OR title ILIKE 'my %'    -- В начале с пробелом после
+   OR title ILIKE '% my'    -- В конце с пробелом перед
+   OR title ILIKE '% my %'  -- В середине с пробелами
+   OR title ILIKE 'my';     -- Только слово
 
 --Задание 3
 --Количество исполнителей в каждом жанре
